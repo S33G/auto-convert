@@ -1,0 +1,26 @@
+# Environment files
+.env
+
+# Music directories (user data)
+music/
+flac/
+aiff/
+output/
+
+# Docker volumes
+data/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
