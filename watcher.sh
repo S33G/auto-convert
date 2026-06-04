@@ -48,7 +48,18 @@ wait_for_file_stable() {
 
 get_ffmpeg_metadata_flags() {
     if [[ "$PRESERVE_METADATA" == "true" ]]; then
-        echo "-map_metadata 0 -id3v2_version 3 -write_id3v1 1"
+        local flags="-map_metadata 0"
+        case "$OUTPUT_FORMAT" in
+            aiff|aif|aifc)
+                flags="$flags -write_id3v2 1 -id3v2_version 3"
+                ;;
+            mp3)
+                flags="$flags -id3v2_version 3 -write_id3v1 1"
+                ;;
+            *)
+                ;;
+        esac
+        echo "$flags"
     else
         echo ""
     fi
