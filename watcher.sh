@@ -83,7 +83,13 @@ get_output_path() {
 
 convert_file() {
     local input_file="$1"
-    
+
+    # Normalize to absolute path: nested bind mounts can cause find to emit
+    # paths without the leading '/' (e.g. "watch/foo.flac" instead of "/watch/foo.flac")
+    if [[ "$input_file" != /* ]]; then
+        input_file="/$input_file"
+    fi
+
     if [[ ! -f "$input_file" ]]; then
         log_error "Input file does not exist: $input_file"
         return 1
@@ -193,7 +199,15 @@ inotifywait "${inotify_opts[@]}" "$WATCH_DIR" 2>/dev/null | while IFS= read -r p
     log_debug "Detected change: $path"
     
     if [[ "${path,,}" == *".${INPUT_FORMAT,,}" ]]; then
-        convert_file "$path" || log_error "Failed to convert: $path"
+        check_path="$path"
+        if [[ "$check_path" != /* ]]; then
+            check_path="/$check_path"
+        fi
+        if [[ ! -f "$check_path" ]]; then
+            log_debug "File no longer exists, skipping: $check_path"
+        else
+            convert_file "$path" || log_error "Failed to convert: $path"
+        fi
     fi
 done &
 
