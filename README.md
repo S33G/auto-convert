@@ -87,7 +87,12 @@ The default configuration converts **FLAC → AIFF** (44.1kHz, 16-bit) because:
    docker compose up -d
    ```
 
-5. **Check logs:**
+5. **Make tools executable (optional but recommended):**
+   ```bash
+   chmod +x tools.sh
+   ```
+
+6. **Check logs:**
    ```bash
    docker compose logs -f
    ```
@@ -254,6 +259,60 @@ docker compose ps
 ```bash
 docker compose down
 # Gracefully shuts down (waits for current conversion)
+```
+
+## 🛠️ Tools
+
+`tools.sh` is a host-side utility for diagnosing your setup and cleaning up audio files. It reads `.env` automatically so no extra configuration is needed.
+
+```bash
+./tools.sh <command>
+```
+
+| Command | Description |
+|---------|-------------|
+| `doctor` | Verify Docker, directories, container health, and internal toolchain |
+| `purge-input` | Delete all input files (`*.flac`) from the watch directory |
+| `purge-output` | Delete all output files (`*.aiff`) from the output directory |
+| `purge` | Delete all input **and** output files (single confirmation) |
+| `help` | Show usage and active variable values |
+
+### Doctor
+
+Runs a full pre-flight check against your environment:
+
+```bash
+./tools.sh doctor
+```
+
+Checks performed:
+
+- Docker daemon is running and `docker compose` is available
+- `.env` present (warns if missing, falls back to defaults)
+- Active config summary (dirs, formats, mode)
+- Watch and output directories exist, are readable/writable, and shows file counts
+- Disk space for each directory
+- Container running and health status (`healthy` / `unhealthy` / `starting`)
+- `ffmpeg` version inside the container
+- `inotifywait` available inside the container
+- `watcher.sh` process is active
+
+### Purge
+
+All purge commands list matching files and require you to type `yes` before anything is deleted.
+
+```bash
+./tools.sh purge-input    # removes *.flac from watch dir
+./tools.sh purge-output   # removes *.aiff from output dir
+./tools.sh purge          # removes both (one combined prompt)
+```
+
+> ⚠️ These operations are **irreversible**. Make sure you have backups before purging input files.
+
+The commands respect your `.env` settings:
+
+```bash
+MUSIC_DIR=./my-music OUTPUT_DIR_HOST=./converted ./tools.sh purge
 ```
 
 ## 🐛 Troubleshooting
