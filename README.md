@@ -9,7 +9,7 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/auto-convert.git
+git clone https://github.com/s33g/auto-convert.git
 cd auto-convert
 
 # Create your music directory
@@ -59,7 +59,7 @@ The default configuration converts **FLAC → AIFF** (44.1kHz, 16-bit) because:
 
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/yourusername/auto-convert.git
+   git clone https://github.com/s33g/auto-convert.git
    cd auto-convert
    ```
 
@@ -430,16 +430,6 @@ Contributions welcome! This is designed to be simple and foolproof. Please:
 ## 📄 License
 
 MIT License - use it however you want!
-
-## 🙏 Acknowledgments
-
-Built for audio professionals and enthusiasts who want automated, reliable format conversion.
-
-**Tested with:**
-- Pioneer XDJ-XZ, CDJ-3000
-- Denon DJ equipment
-- Rekordbox, Serato DJ Pro, Traktor
-- Various audio production workflows
 
 ---
 
