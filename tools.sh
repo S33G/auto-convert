@@ -248,6 +248,15 @@ cmd_purge_input() {
 
     echo ""
     ok "Deleted $deleted file(s)."
+
+    local empty_dirs
+    empty_dirs=$(find "$MUSIC_DIR" -mindepth 1 -depth -type d -empty 2>/dev/null) || true
+    if [[ -n "$empty_dirs" ]]; then
+        local dir_count
+        dir_count=$(echo "$empty_dirs" | wc -l | tr -d ' ')
+        find "$MUSIC_DIR" -mindepth 1 -depth -type d -empty -delete 2>/dev/null || true
+        ok "Removed $dir_count empty director(ies)."
+    fi
     echo ""
 }
 
@@ -296,6 +305,15 @@ cmd_purge_output() {
 
     echo ""
     ok "Deleted $deleted file(s)."
+
+    local empty_dirs
+    empty_dirs=$(find "$OUTPUT_DIR_HOST" -mindepth 1 -depth -type d -empty 2>/dev/null) || true
+    if [[ -n "$empty_dirs" ]]; then
+        local dir_count
+        dir_count=$(echo "$empty_dirs" | wc -l | tr -d ' ')
+        find "$OUTPUT_DIR_HOST" -mindepth 1 -depth -type d -empty -delete 2>/dev/null || true
+        ok "Removed $dir_count empty director(ies)."
+    fi
     echo ""
 }
 
@@ -367,6 +385,20 @@ cmd_purge() {
 
     echo ""
     ok "Deleted $deleted file(s)."
+
+    local total_dir_count=0
+    local empty_input_dirs="" empty_output_dirs=""
+    empty_input_dirs=$(find "$MUSIC_DIR" -mindepth 1 -depth -type d -empty 2>/dev/null) || true
+    if [[ "$OUTPUT_DIR_HOST" != "$MUSIC_DIR" ]]; then
+        empty_output_dirs=$(find "$OUTPUT_DIR_HOST" -mindepth 1 -depth -type d -empty 2>/dev/null) || true
+    fi
+    [[ -n "$empty_input_dirs" ]] && (( total_dir_count += $(echo "$empty_input_dirs" | wc -l | tr -d ' ') )) || true
+    [[ -n "$empty_output_dirs" ]] && (( total_dir_count += $(echo "$empty_output_dirs" | wc -l | tr -d ' ') )) || true
+    if [[ $total_dir_count -gt 0 ]]; then
+        [[ -n "$empty_input_dirs" ]] && find "$MUSIC_DIR" -mindepth 1 -depth -type d -empty -delete 2>/dev/null || true
+        [[ -n "$empty_output_dirs" ]] && find "$OUTPUT_DIR_HOST" -mindepth 1 -depth -type d -empty -delete 2>/dev/null || true
+        ok "Removed $total_dir_count empty director(ies)."
+    fi
     echo ""
 }
 
